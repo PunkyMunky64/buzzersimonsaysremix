@@ -17,14 +17,17 @@ Hardware needed:
 4x 10k resisors
 10x jumpers
 */
+int velocity = 500;
+int vchange = -20;
+int error_spot = -1;
+int beeplong = 160;
 
-const int MAX_LEVEL = 100;
+const int MAX_LEVEL = 25; //velocity/abs(vchange);
 int sequence[MAX_LEVEL];
 int your_sequence[MAX_LEVEL];
 int level = 1;
 const int BUZZER = 12;
 
-int velocity = 1000;
 
 void setup() {
 pinMode(A0, INPUT);
@@ -65,10 +68,14 @@ digitalWrite(5, LOW);
 
 for (int i = 0; i < level; i++)
 {
+if(error_spot==i)
+{
+beeplong = 640;
+}
 digitalWrite(sequence[i], HIGH);
 if (sequence[i]==2)
 {
-for(int k=0;k<160;k++)
+for(int k=0;k<beeplong;k++)
    {
     digitalWrite(BUZZER,HIGH);
     delay(1);//wait for 1ms
@@ -79,7 +86,7 @@ for(int k=0;k<160;k++)
 }
 if (sequence[i]==3)
 {
-for(int k=0;k<80;k++)
+for(int k=0;k<beeplong/2;k++)
    {
     digitalWrite(BUZZER,HIGH);
     delay(2);//wait for 1ms
@@ -90,7 +97,7 @@ for(int k=0;k<80;k++)
 }
 if (sequence[i]==4)
 {
-for(int k=0;k<53;k++)
+for(int k=0;k<beeplong/3;k++)
    {
     digitalWrite(BUZZER,HIGH);
     delay(3);//wait for 1ms
@@ -101,7 +108,7 @@ for(int k=0;k<53;k++)
 }
 if (sequence[i]==5)
 {
-for(int k=0;k<40;k++)
+for(int k=0;k<beeplong/4;k++)
    {
     digitalWrite(BUZZER,HIGH);
     delay(4);//wait for 1ms
@@ -114,6 +121,7 @@ for(int k=0;k<40;k++)
 delay(velocity);
 digitalWrite(sequence[i], LOW);
 delay(200);
+beeplong = 160;
 }
 }
 
@@ -141,6 +149,7 @@ flag = 1;
 delay(200);
 if (your_sequence[i] != sequence[i])
 {
+error_spot = i;
 wrong_sequence();
 return;
 }
@@ -162,6 +171,7 @@ flag = 1;
 delay(200);
 if (your_sequence[i] != sequence[i])
 {
+error_spot = i;
 wrong_sequence();
 return;
 }
@@ -183,6 +193,7 @@ flag = 1;
 delay(200);
 if (your_sequence[i] != sequence[i])
 {
+error_spot = i;
 wrong_sequence();
 return;
 }
@@ -204,12 +215,12 @@ flag = 1;
 delay(200);
 if (your_sequence[i] != sequence[i])
 {
+error_spot = i;
 wrong_sequence();
 return;
 }
 digitalWrite(2, LOW);
 }
-
 }
 }
 right_sequence();
@@ -250,8 +261,10 @@ digitalWrite(4, LOW);
 digitalWrite(5, LOW);
 delay(250);
 }
+show_sequence();
 level = 1;
-velocity = 1000;
+velocity = 500;
+error_spot=-1;
 }
 
 void right_sequence()
@@ -283,5 +296,5 @@ delay(500);
 if (level < MAX_LEVEL);
 level++;
 
-velocity -= 50; //increase difficulty
+velocity += vchange; //increase difficulty
 }
